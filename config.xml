@@ -7,10 +7,6 @@
 
   <name>Dualsubs</name>
 
-<uses-permission android:name="android.permission.INTERNET" />
-<allow-navigation href="*" />
-    <allow-intent href="*" />
-    <access origin="*" />
 
 
   <description>
