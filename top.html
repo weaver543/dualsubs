@@ -1,0 +1,106 @@
+<html>
+<body>
+v003
+<style>
+  body { height:100%; margin:0; padding:0; } /* for IE */
+  #status { color: green; }
+
+  #overlay {
+    visibility: hidden;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
+ }   
+
+ #overlay div {
+     width:300px;
+     margin: 10px auto;
+     background-color: #fff;
+     border:1px solid #000;
+     padding:15px;
+     text-align:center;
+     /* https://raventools.com/blog/create-a-modal-dialog-using-css-and-javascript/# */
+}
+   
+</style>
+
+
+<!--
+<button onclick="bringToView('r1')" >r1</button>
+<button onclick="bringToView('r2')" >r1</button>
+<button onclick="bringToView('r3')" >r1</button>
+<button onclick="bringToView('r4')" >r1</button>
+<button onclick="bringToView('r5')" >r1</button>
+<button onclick="bringToView('r6')" >r1</button>
+<button onclick="bringToView('r7')" >r1</button>
+<button onclick="bringToView('r8')" >r1</button>
+<button onclick="bringToView('r9')" >r1</button>
+<button onclick="bringToView('r200')" >r200</button>
+<button onclick="bringToView('r300')" >r300</button>
+<button onclick="bringToView('r3')" >bookmark3</button>
+<br>
+<button onclick="scrollToTop()" >gotoTop</button>
+<button onclick="status('starting')">teststatus</button> 
+<button onclick="show_subtitles()">show subtitles</button> 
+<button onclick="delayedGreeting()">DelayedGreeting</button> 
+<button onclick="writeToFrame(1)">writeToFrame</button> 
+<button onclick="addspanish()">testadd</button> 
+<button onclick="myfilter()">filterhex</button> 
+<button onclick="testseek()">testseek</button> 
+<button onclick="vlcSeek(0)">testseekfunc</button> 
+<button onclick="vlcSeek(600000)">gotoMiddle</button> 
+<button onclick="showdate()">showdate</button> 
+
+-->
+
+
+
+<input type="file" id="fileinput"/>
+<button onclick="togglePasteDiv()">Paste 2nd</button>
+<button onclick="playFromBeginning()">Play from 0</button>
+<button onclick="pause()">Pause</button>
+<button onclick="stop()">Stop</button>
+<button onclick="syncToPaused()">Sync</button>
+<button onclick="loadFirst()">Load Subtitles</button>
+<button onclick="loadSecond()">Load 2nd</button>
+<button onclick="autoloadFirst()">auto1</button>
+<button onclick="autoloadSecond()">auto2</button>
+<button onclick="toggleBorders()">borders</button>
+<input type="checkbox" id="scrollbox" value="Bike" onclick="toggleScroll()" CHECKED>
+<label for="cuebox" id="cuelabel">0</label>
+<input type="text" id="cuebox" style="width: 20px;"  onblur="goto(cuebox.value);"> 
+
+<br>
+<p id="status"></p>
+
+
+
+<div id="overlay">
+  <div>
+    <p>Paste SRT subtitles below</p>
+    <table>
+      <tr>
+        <td rowspan=2><textarea id="pastebox" name="w3review" rows="3" cols="20"></textarea>   </td>
+        <td><button onclick='addSecond( document.getElementById("pastebox").value )'>Submit</button></td>
+      </tr>
+      <tr><td>
+        <button onclick="togglePasteDiv();">Cancel</button></td>
+      </tr>
+      </tr>
+  </table> 
+  </div>
+ </div>
+
+
+
+
+<script src="top.js"> </script>
+
+</body>
+
+</html>
