@@ -1,6 +1,9 @@
 #!/usr/bin/env perl
-# directions:   on fi /usr/local/bin/subserver.pl (server port 8081 and vlc on 8082)  then in browser:  http://fi:8081/subs.html
-# invoke vlc with subvlc:  /usr/bin/vlc --http-host=127.0.0.1 --http-port=8080
+# directions:   on fi /usr/local/bin/subserver.pl (server port 8081 and vlc on 8082) 
+$HELP1="Easiest to invoke this from same directory that files reside.  open browser to http://fi:8081/subs.html";
+$HELP2="invoke vlc with subvlc alias (/usr/bin/vlc --http-host=127.0.0.1 --http-port=8080)";
+
+
 use LWP;
 use LWP::UserAgent;
 use Socket;
@@ -9,15 +12,22 @@ use IO::Socket;
 my $port = 8081;  #  shift;
 
 
-$VLC='http://127.0.0.1:8082';
-#$VLC='http://192.168.1.12:8080';
+# choose where VLC is running
+$VLC='http://127.0.0.1:8082';    # fi
 #$VLC='http://192.168.1.22:8080';  # laptop
+
+
 $USER = '';
 $PASS = 'f';
 $SHOWFILES=0;
 
-#$DOCUMENT_ROOT = ".";
-$DOCUMENT_ROOT = "/var/www/html";
+$DOCUMENT_ROOT = ".";
+#$DOCUMENT_ROOT = "/var/www/html";
+
+
+
+
+
 
 my $ua = LWP::UserAgent->new();
 
@@ -68,7 +78,10 @@ $VLCsocket or die "Unable to create vlc socket: $!" ;
 # Await requests and handle them as they arrive
 
 print "VLC command server is running on port $port for vlc on $VLC...\n";
+print "$HELP1\n";
+print "$HELP2\n";
 while (my $client = $server->accept()) {
+    binmode $client;
     $client->autoflush(1);
     my %request = ();
     my %data;
@@ -139,18 +152,56 @@ while (my $client = $server->accept()) {
             #($command, $param) = split(/\?/, $request{URL});
             &vlcseek($request{CONTENT});
             print $client "HTTP/1.0 200 OK", Socket::CRLF;
+        } elsif ($request{URL} =~ /getdir/) {
+            print "processing getdir\n";
+            print $client "HTTP/1.0 200 OK", Socket::CRLF;
+
+            $dirlist='';
+            (@files) = glob "$DOCUMENT_ROOT/*.srt";
+            for $fname (@files) {
+              @arr = split /\//, $fname ;  # trim path from basename
+              #$dirlist .= "$fname,";
+              $dirlist .= "$arr[$#arr],";
+            }  
+            chop $dirlist;
+
+            print $client "Content-type: text/plain", Socket::CRLF;
+            print $client Socket::CRLF;
+            my $buffer;
+            print $client $dirlist;
+            $data{"_status"} = "200";
+            print "processed getdir\n";
         
         } else {
-            print "Serving $request{URL} \n";
+            print "Serving $request{URL}";
 
             #http://127.0.0.1:8081/requests/status.xml?command=pl_pause
 
-            my $localfile = $DOCUMENT_ROOT.$request{URL};
+#            my $localfile = $DOCUMENT_ROOT.$request{URL};
+            my $localfile = "$DOCUMENT_ROOT" . "$request{URL}";
 
     # Send Response
             if (open(FILE, "<$localfile")) {
+                binmode FILE;
+                @arr = (split /\./, $localfile);
+                $extension = "$arr[$#arr]";   #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+                if ($extension eq 'css') {
+                  $mimetype = 'text/css';
+                } elsif ($extension eq 'htm' || $extension eq 'html') {
+                  $mimetype = 'text/html';
+                } elsif ($extension eq 'js' ) {
+                  $mimetype = 'text/javascript';
+                } elsif ($extension eq 'png' ) {
+                  $mimetype = 'image/png';
+                } else {
+                  $mimetype = 'text/plain';
+                }  
+
+                print "\n!!!!ext=>$extension< mimetype=>$mimetype< \n";
+
+                print "...$localfile\n";
                 print $client "HTTP/1.0 200 OK", Socket::CRLF;
-                print $client "Content-type: text/html", Socket::CRLF;
+                print $client "Content-type: $mimetype", Socket::CRLF;
                 print $client Socket::CRLF;
                 my $buffer;
                 while (read(FILE, $buffer, 4096)) {
@@ -159,6 +210,7 @@ while (my $client = $server->accept()) {
                 $data{"_status"} = "200";
             }
             else {
+                print "...ERROR: $localfile not found\n";
                 print $client "HTTP/1.0 404 Not Found", Socket::CRLF;
                 print $client Socket::CRLF;
                 print $client "<html><body>404 Not Found</body></html>";

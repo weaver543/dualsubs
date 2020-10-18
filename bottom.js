@@ -32,15 +32,10 @@ onRowClick("my-table-id", function (row){
 
 
 
-
+/* below is only used for adjustable table divider, but now its in middle
  var table = document.getElementById('my-table-id');
  resizableGrid(table);
 
-//var tables = document.getElementsByClassName('flexiCol');
-// var tables = document.getElementsByTagName('table');
-// for (var i=0; i<tables.length;i++){
-//  resizableGrid(tables[i]);
-// }
 
 function resizableGrid(table) {
  var row = table.getElementsByTagName('tr')[0],
@@ -130,9 +125,10 @@ function resizableGrid(table) {
  }
 };
 
-function toggleBorders() {
-document.getElementById('id1').style.color = 'red';
-}
+*/
+
+
+
 
 document.onkeypress = function (e) {
   e = e || window.event;

@@ -1,20 +1,23 @@
 <html>
 <body>
-<!--p style="text-align:left" id="myp"></p-->
 <style>
-  td { white-space:pre;   border: 1px; padding: 20px;  }
+  td { white-space:pre-wrap;   border: 1px; padding: 20px;  }
 
-  *{box-sizing: border-box;}
-  table { border-collapse:collapse;
+  table { 
+    table-layout:fixed;
     font-family: "Arial Black", "Times New Roman", Times, serif;
+    border-collapse: collapse;
   }
-  td,th{padding:5px 15px;text-align:left;}
+  td,th{padding:2px 2px;  text-align:left;}
   table,th,td{border:1px solid #000;}
+
+  .equal-width td { width: 50%; word-wrap: break-word; }
+
 </style>
-<!--tbody style="cursor:pointer"-->
 
 <center>
-<table id="my-table-id" width=100% border=0>
+
+<table id="my-table-id" width=100% border=0 class="equal-width">
 
 
 

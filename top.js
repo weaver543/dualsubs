@@ -8,10 +8,18 @@ var playing=false;
 var xhttp = new XMLHttpRequest();
 var borders=true;
 var scrolling=true;
+var expanded=false;
+var fontpercent=100;
+var collapsedHeight=50;
+var fullscreen=false;
 
 function toggleScroll() {
-  let scrollbox = document.getElementById("scrollbox"); 
-  scrolling = scrollbox.checked;
+  scrolling = ! scrolling;
+  if (scrolling) {
+    document.getElementById("scrollbutton").style.backgroundImage = "linear-gradient(rgb(222, 222, 222), rgb(255, 255, 255))";
+  } else {
+    document.getElementById("scrollbutton").style.backgroundImage = "linear-gradient(rgb(99, 99, 99), rgb(166, 166, 166))";
+  }
 }
 
 function showdate() {
@@ -24,6 +32,17 @@ function getTime() {
   return mytime;
 }
 
+function increaseFont() {
+  let id = parent.frames.bottom.document.getElementById("my-table-id");
+  fontpercent += 15;
+  id.style.fontSize=fontpercent + "%";
+}
+
+function decreaseFont() {
+  let id = parent.frames.bottom.document.getElementById("my-table-id");
+  fontpercent -= 15;
+  id.style.fontSize=fontpercent + "%";
+}
 
 
 async function playFromBeginning() {
@@ -62,25 +81,113 @@ function bringToView(id){
 
 function syncToPaused() { playing=false; }
 
+function toggleExtra() {
+  //parent.document.getElementById('parent.parentframe').rows ="30%,70%"
+  expanded=!expanded;
+  if (expanded) {
+    parent.document.getElementById('parentframe').rows ="400,*"
+  } else {
+    parent.document.getElementById('parentframe').rows = collapsedHeight + ",*"
+  }
+  console.log("set it");
+}
+
+
+function stop() {
+  //parent.frames["bottom"].document.getElementById(activeId).style.backgroundColor='white';
+  currentSession++;
+  vlcPause();
+  playing=!playing;
+  if (playing) {
+    stop();
+  }
+}
+
+/* commented
 function testseek() {
   xhttp.open("GET", "/vlcseek?0" , true);
   xhttp.send();
   console.log("sent vlcseek!")
 }
 
-function pause() {
+function stop_OLD() {
+  currentSession++;
   vlcPause();
-  playing=!playing;
-  console.log("now playing=" + playing);
-  if (playing) {
-    stop();
-  }
+  status("Stopped...")
 }
+
+
+// simulate play
+async function testplay() {
+  console.log("starting to display");
+  let curtime = 0;
+  for (i=0; i<subtitles.length; i++) {
+     console.log("waiting to display....start=" + subtitles[i].start + " cur=" + curtime + " => " + (Number(subtitles[i].start) - Number(curtime))   );
+     await sleep(   Number(subtitles[i].start) - Number(curtime)  );
+     fun1(subtitles[i].text);
+     console.log("waiting to clear...end= " + subtitles[i].end + " and " + subtitles[i].start + "=>" + (Number(subtitles[i].end) - Number(subtitles[i].start)) );
+     await sleep(Number(subtitles[i].end) - Number(subtitles[i].start) );
+     fun1("");
+     curtime = Number(subtitles[i].end);
+  }
+  console.log("done");
+}
+
+*/
+
 
 function vlcPause() {
   xhttp.open("GET", "/vlcpause", true);
   xhttp.send();
   console.log("sent vlcpause!")
+}
+
+function showDir(filestring) {
+  console.log("received " + filestring)
+
+  toggleModal("dirlist")
+
+/*
+  el = document.getElementById("dirlist");
+  
+  if (el.style.visibility != "visible" ) {
+    el.style.visibility = "visible"
+    parent.document.getElementById('parentframe').rows ="400,*"
+  } else {
+    el.style.visibility = "hidden"
+    parent.document.getElementById('parentframe').rows =collapsedHeight + ",*"
+  }
+*/
+
+  
+  let dropdown = document.getElementById('filedropdown');
+  let defaultOption = document.createElement('option');
+  defaultOption.text = 'Choose SRT file';
+  dropdown.add(defaultOption);
+  dropdown.selectedIndex = 0;
+  
+  //let filestring="a.srt,b.srt,c.srt,bbbbb.srt"
+  var fnames = filestring.split(',');
+  for(var i = 0; i < fnames.length; i++){
+    console.log("its " + fnames[i]);
+    option = document.createElement('option');
+    option.text = fnames[i];
+    option.value = fnames[i];
+    dropdown.add(option);
+  }
+}
+
+function getDir() {
+  var dirXhttp = new XMLHttpRequest();
+  dirXhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+         showDir(dirXhttp.responseText);
+         //document.getElementById("demo").innerHTML = xhttp.responseText;
+      }
+  };
+  dirXhttp.open("GET", "/getdir", true);
+  dirXhttp.send();
+  console.log("sent getdir")
 }
 
 function vlcSeek(ms) {
@@ -114,12 +221,6 @@ async function goto(idx) {
   }
 }
 
-function stop() {
-  currentSession++;
-  vlcPause();
-  status("Stopped...")
-}
-
 async function playSubtitles(session, idx) {
   console.log("playSubtitles idx=" + idx );
   idx=Number(idx);
@@ -144,11 +245,11 @@ async function playSubtitles(session, idx) {
     console.log("ses=" + session + " waiting to display idx " + idx + " at " + subtitles[idx].start + " cur=" + curtime + " => " + (Number(subtitles[idx].start) - Number(curtime))   );
     await sleep(   Number(subtitles[idx].start) - Number(curtime)  );
     if (session != currentSession) return;
-console.log("!!!!now2 to call bringtoview for idx=" + idx + " and " + Number(subtitles[idx].index));
+    //console.log("!!!!now2 to call bringtoview for idx=" + idx + " and " + Number(subtitles[idx].index));
 
-  //bringToView("r" + Number(subtitles[idx].index))
-  bringToView("r" + idx)
-  console.log("waiting to clear at " + subtitles[idx].end + "=>" + (Number(subtitles[idx].end) - Number(subtitles[idx].start)) );
+    //bringToView("r" + Number(subtitles[idx].index))
+    bringToView("r" + idx)
+    //console.log("waiting to clear at " + subtitles[idx].end + "=>" + (Number(subtitles[idx].end) - Number(subtitles[idx].start)) );
     await sleep(Number(subtitles[idx].end) - Number(subtitles[idx].start) );
     if (session != currentSession) return;
     //bringToView("r" + Number(subtitles[i].index))
@@ -158,31 +259,6 @@ console.log("!!!!now2 to call bringtoview for idx=" + idx + " and " + Number(sub
 }
 
 
-
-// simulate play
-async function testplay() {
-  console.log("starting to display");
-  let curtime = 0;
-  for (i=0; i<subtitles.length; i++) {
-     console.log("waiting to display....start=" + subtitles[i].start + " cur=" + curtime + " => " + (Number(subtitles[i].start) - Number(curtime))   );
-     await sleep(   Number(subtitles[i].start) - Number(curtime)  );
-     fun1(subtitles[i].text);
-     console.log("waiting to clear...end= " + subtitles[i].end + " and " + subtitles[i].start + "=>" + (Number(subtitles[i].end) - Number(subtitles[i].start)) );
-     await sleep(Number(subtitles[i].end) - Number(subtitles[i].start) );
-     fun1("");
-     curtime = Number(subtitles[i].end);
-  }
-  console.log("done");
-}
-
-function show_subtitles() {
-  console.log("NOW AGAIN");
-  let flen = subtitles.length;                                  
-
-  for (i = 0; i < flen; i++) {
-     console.log(subtitles[i].index + " -> start=" + subtitles[i].start  + " end=" + subtitles[i].end ); // + "\n" + subtitles[i].text
-  }
-}
 
 
 async function status(text) {
@@ -278,10 +354,64 @@ function loadLocalFile(evt) {
 }
 
 
+function promptForFirst() {
+  var url = prompt("Enter URL for subtitles file", "julia-spanish.srt");
+  if (url != null) {
+    downloadFirst(url)
+  }
+}
 
 
+function downloadFirst(url) {
+  if (url != null) {
+    var http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+         loadFromText(http.responseText);
+      }
+    };
+    http.open("GET", url, true);
+    http.send();  
+  }
+}
 
-function loadFirst() {
+function promptForSecond() {
+  var url = prompt("Enter URL for second subtitles file", "julia-english.srt");
+  if (url != null) {
+    downloadSecond(url)
+  }
+}
+
+
+function downloadSecond(url) {
+  if (url != null) {
+    var http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        loadSecondFromText( http.responseText );
+      }
+    };
+    http.open("GET", url, true);
+    http.send();  
+  }
+}
+
+function loadSecondBAK() {
+  var url = prompt("Enter URL for subtitles file", "julia-english.srt");
+  if (url != null) {
+    var http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        loadSecondFromText( http.responseText );
+      }
+    };
+    http.open("GET", url, true);
+    http.send();  
+  }
+}
+
+
+function loadFirstBAK() {
   var url = prompt("Enter URL for subtitles file", "julias.srt");
   if (url != null) {
     var http = new XMLHttpRequest();
@@ -295,19 +425,10 @@ function loadFirst() {
   }
 }
 
-function loadSecond() {
-  var url = prompt("Enter URL for subtitles file", "julia-english.srt");
-  if (url != null) {
-    var http = new XMLHttpRequest();
-    http.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        loadSecondFromText( http.responseText );
-      }
-    };
-    http.open("GET", url, true);
-    http.send();  
-  }
+function showAbout() {
+  alert("DualSubs version 1.0\nBy Kevin Ryan ©2020")
 }
+
 
 
 function autoloadFirst() {
@@ -367,7 +488,7 @@ function loadFromText(text) {
 
       while (text.length<2) {  // cases where blank lines follow time line 
         text = lines[++line];  
-        console.debug("had to skip lines to get to text for " + text)
+        console.debug( "had to skip lines to get to text for " + text)
       }
       line++;
 
@@ -389,8 +510,8 @@ function loadFromText(text) {
     }
   }
   status("Loaded " + subtitleCount + " subtitles");
-createScriptElement();
-console.log("done loading script")
+  createScriptElement();
+  console.log("done loading script")
 
 }
 
@@ -417,9 +538,19 @@ function createTableRow(idx, text) {
 }
 
 
-function togglePasteDiv() {
-  el = document.getElementById("overlay");
-  el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+function toggleModal(elementId) {
+  el = document.getElementById(elementId);
+  
+  if (el.style.visibility != "visible" ) {
+    el.style.visibility = "visible"
+    parent.document.getElementById('parentframe').rows ="400,*"
+  } else {
+    el.style.visibility = "hidden"
+    parent.document.getElementById('parentframe').rows =collapsedHeight + ",*"
+  }
+  
+  //visibility: hidden - hides the element, but it still takes up space in the layout.
+  //display: none - removes the element completely from the document, it doesn't take up any space.
 }
 
 
@@ -449,6 +580,36 @@ function toggleBorders() {
     x[i].style.border=widthstr;
   }
 }
+
+function toggleFullscreen() {
+  var elem = parent.document.documentElement;
+  if (fullscreen) {
+    if (parent.document.exitFullscreen) {
+      parent.document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      parent.document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      parent.document.webkitExitFullscreen();
+    } else if (parent.document.msExitFullscreen) {
+      parent.document.msExitFullscreen();
+    }   
+    document.getElementById("fullscreen").src = "fullscreen.png";
+  } else {
+    
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) { /* Firefox */
+      elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+      elem.msRequestFullscreen();
+    }
+    document.getElementById("fullscreen").src = "restore.png";  
+  }
+  fullscreen = !fullscreen;
+}
+
 
 document.getElementById('fileinput').addEventListener('change', loadLocalFile, false);
 

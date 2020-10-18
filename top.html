@@ -1,11 +1,27 @@
 <html>
+<head>
+  <!--link rel="stylesheet" href="fontawesome/css/all.min.css"-->
+  <!--link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" crossorigin="anonymous"/-->
+  <!-- look up icons at https://fontawesome.com/v4.7.0/icons/ -->
+</head>
 <body>
-v003
-<style>
-  body { height:100%; margin:0; padding:0; } /* for IE */
-  #status { color: green; }
+  <!--
+  <i class="fa fa-camera-retro"></i> 
+  <img width="30px" src="compress.svg" ></img>
+  <button><span class="credits bigbutton" style="background: url(compress.svg) no-repeat"></span></button>
+  <button>
+    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="compress" class="svg-inline--fa fa-compress fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12z"></path></svg>
+    </button>
+    -->
+  
+  <style>
+  body {
+    height:100%; margin:0; padding:0;  /* for IE */
+  }
 
-  #overlay {
+  #status { color: green; }
+  
+  .overlay {
     visibility: hidden;
     position: absolute;
     left: 0px;
@@ -17,7 +33,7 @@ v003
     background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
  }   
 
- #overlay div {
+ .overlay div {
      width:300px;
      margin: 10px auto;
      background-color: #fff;
@@ -27,8 +43,135 @@ v003
      /* https://raventools.com/blog/create-a-modal-dialog-using-css-and-javascript/# */
 }
    
+/*  padding:0.46em 1.6em;
+ margin:0 0.2em 0.2em 0;
+ border-radius:0.12em;
+
+ padding:01.26em 1.6em;
+border:0.1em solid #000000;
+margin:0 0.2em 0.2em 0;
+
+*/
+.bigbutton{
+background-image: linear-gradient(rgb(222, 222, 222), white);
+/*background-image: linear-gradient(rgb(99, 99, 99), rgb(166, 166, 166));*/
+vertical-align: top;
+padding-left: 20px;
+padding-right: 20px;
+background-position: 50%, 50%;
+align-items : center;
+height:50px;
+background-size: cover;
+display:inline-block;
+border-radius:0.52em;
+box-sizing: border-box;
+text-decoration:none;
+font-family:sans-serif;
+font-weight:300;
+color:#000000;
+background-color:#FFFFFF;
+text-align:center;
+}
+@media all and (max-width:300em){
+ a.button5{
+  display:block;
+  margin:0.4em auto;
+ color:red;
+ }
+}
+
+button > img,
+button > span {
+  vertical-align: middle;
+}
+
+#search-button {
+  width: 100px;
+  height: 50px;
+}
+    
+#search-button svg {
+  width: 25px;
+  height: 25px;
+}
+
+span.credits {
+    /*background: url(compress.svg) no-repeat ;*/
+    background-size: contain;
+    display: inline-block;
+    height: 52px;
+    width: 40px;
+}
+
 </style>
 
+
+<!--a href="#" class="bigbutton">Buttontest</a-->
+<!--button onclick="playFromBeginning()" class="bigbutton"><i class="fa fa-play" title="play" aria-hidden="true"></i></button-->
+
+<button onclick="toggleExtra()" class="bigbutton"><img src="download.png"></button>
+<button onclick="playFromBeginning()" class="bigbutton"><img src="play.png"></button>
+<button onclick="stop()" class="bigbutton"><img src="stop.png"></button>
+<button onclick="toggleScroll()" class="bigbutton" id="scrollbutton" ><img src="scroll.png"></button>
+<button onclick="autoloadFirst()" class="bigbutton">a1</button>
+<button onclick="autoloadSecond()" class="bigbutton">a2</button>
+
+<button onclick="getDir()" class="bigbutton"><img src="directory.png"></button>
+
+
+<button onclick="syncToPaused()" class="bigbutton">Sync</button>
+<button onclick="decreaseFont()" class="bigbutton">&lt;</button>
+<button onclick="increaseFont()" class="bigbutton">&gt;</button>
+<button onclick="toggleFullscreen();" id="fullscreen" class="bigbutton"><img src="fullscreen.png"></button>
+
+<label for="cuebox" id="cuelabel">0</label>
+<input type="text" id="cuebox" style="width: 30px;"  onblur="goto(cuebox.value);"> 
+
+<button onclick="promptForFirst()" class="bigbutton">Prompt for first file</button>
+<button onclick="promptForSecond()" class="bigbutton">Prompt for second file</button>
+<input type="file" id="fileinput"/>
+<button onclick="toggleModal('overlay')" class="bigbutton">Paste 2nd</button>
+<button onclick="toggleBorders()" class="bigbutton">borders</button>
+
+<button onclick="showAbout();" class="bigbutton">About</button>
+
+<!--button onclick="openFullscreen();" class="bigbutton"><img src="fullscreen.png"></button>
+<button onclick="closeFullscreen();" class="bigbutton"><img src="restore.png"></button-->
+
+
+
+<br>
+<p id="status"></p>
+
+
+
+<div id="overlay" class="overlay"><div>
+    <p>Paste SRT subtitles below</p>
+    <table>
+      <tr>
+        <td rowspan=2><textarea id="pastebox" name="w3review" rows="3" cols="20"></textarea>   </td>
+        <td><button onclick='loadSecondFromText( document.getElementById("pastebox").value )'>Submit</button></td>
+      </tr>
+      <tr><td>
+        <button onclick="toggleModal('overlay');">Cancel</button></td>
+      </tr>
+      </tr>
+  </table> 
+ </div></div>
+
+ <div id="dirlist" class="overlay"><div>
+    <select  id="filedropdown"></select>
+    <p></p>
+    <button onclick='downloadFirst( document.getElementById("filedropdown").value )'>Load first file</button>
+    <button onclick='downloadSecond( document.getElementById("filedropdown").value )'>Load second file</button>
+    <button onclick="toggleModal('dirlist');">Close</button>
+ </div></div>
+
+
+
+<script src="top.js"> </script>
+
+</body>
 
 <!--
 <button onclick="bringToView('r1')" >r1</button>
@@ -60,47 +203,5 @@ v003
 
 
 
-<input type="file" id="fileinput"/>
-<button onclick="togglePasteDiv()">Paste 2nd</button>
-<button onclick="playFromBeginning()">Play from 0</button>
-<button onclick="pause()">Pause</button>
-<button onclick="stop()">Stop</button>
-<button onclick="syncToPaused()">Sync</button>
-<button onclick="loadFirst()">Load Subtitles</button>
-<button onclick="loadSecond()">Load 2nd</button>
-<button onclick="autoloadFirst()">auto1</button>
-<button onclick="autoloadSecond()">auto2</button>
-<button onclick="toggleBorders()">borders</button>
-<input type="checkbox" id="scrollbox" value="Bike" onclick="toggleScroll()" CHECKED>
-<label for="cuebox" id="cuelabel">0</label>
-<input type="text" id="cuebox" style="width: 20px;"  onblur="goto(cuebox.value);"> 
-
-<br>
-<p id="status"></p>
-
-
-
-<div id="overlay">
-  <div>
-    <p>Paste SRT subtitles below</p>
-    <table>
-      <tr>
-        <td rowspan=2><textarea id="pastebox" name="w3review" rows="3" cols="20"></textarea>   </td>
-        <td><button onclick='addSecond( document.getElementById("pastebox").value )'>Submit</button></td>
-      </tr>
-      <tr><td>
-        <button onclick="togglePasteDiv();">Cancel</button></td>
-      </tr>
-      </tr>
-  </table> 
-  </div>
- </div>
-
-
-
-
-<script src="top.js"> </script>
-
-</body>
 
 </html>
