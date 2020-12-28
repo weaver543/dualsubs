@@ -355,7 +355,7 @@ function loadLocalFile(evt) {
 
 
 function promptForFirst() {
-  var url = prompt("Enter URL for subtitles file", "julia-spanish.srt");
+  var url = prompt("Enter URL for subtitles file", "s.txt");
   if (url != null) {
     downloadFirst(url)
   }
@@ -376,7 +376,7 @@ function downloadFirst(url) {
 }
 
 function promptForSecond() {
-  var url = prompt("Enter URL for second subtitles file", "julia-english.srt");
+  var url = prompt("Enter URL for second subtitles file", "e.txt");
   if (url != null) {
     downloadSecond(url)
   }

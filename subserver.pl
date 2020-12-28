@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # directions:   on fi /usr/local/bin/subserver.pl (server port 8081 and vlc on 8082) 
 $HELP1="Easiest to invoke this from same directory that files reside.  open browser to http://fi:8081/subs.html";
-$HELP2="invoke vlc with subvlc alias (/usr/bin/vlc --http-host=127.0.0.1 --http-port=8080)";
+$HELP2="invoke vlc with subvlc alias on linux (linux: /usr/bin/vlc --http-host=127.0.0.1 --http-port=8080)\n on windows cd \program files (x86))\VIdeoLAN/VLC and invoke:  vlc.exe --http-host=127.0.0.1 --http-port=8080 ";
 
 
 use LWP;
@@ -13,9 +13,11 @@ my $port = 8081;  #  shift;
 
 
 # choose where VLC is running
-$VLC='http://127.0.0.1:8082';    # fi
-#$VLC='http://192.168.1.22:8080';  # laptop
-
+#$VLC='http://127.0.0.1:8082';    # fi
+$VLC='http://192.168.1.22:8080';  # laptop
+$VLC='http://10.0.0.235:8080';  # laptop at Argen
+$VLC='http://127.0.0.1:8080';  # laptop at Argen
+ 
 
 $USER = '';
 $PASS = 'f';
@@ -173,6 +175,7 @@ while (my $client = $server->accept()) {
             print "processed getdir\n";
         
         } else {
+            $request{URL} = '/index.html' if $request{URL} eq "/";
             print "Serving $request{URL}";
 
             #http://127.0.0.1:8081/requests/status.xml?command=pl_pause
